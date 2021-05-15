@@ -1,0 +1,58 @@
+<template>
+  <el-container class="layout">
+    <el-aside :width="asideWidth">
+      <LayoutAside />
+    </el-aside>
+    <el-container :class="centerClass">
+      <el-header :height="variables.headerHeight" style="padding: 0">
+        <LayoutHeader />
+      </el-header>
+      <el-main>
+        <LayoutContent />
+      </el-main>
+    </el-container>
+  </el-container>
+</template>
+<script lang="ts">
+import { computed, defineComponent } from 'vue'
+import LayoutAside from './aside/index.vue'
+import LayoutHeader from './header/index.vue'
+import LayoutContent from './content/index.vue'
+import { useStore } from 'vuex'
+import variables from '@/styles/variables.scss'
+
+export default defineComponent({
+  components: {
+    LayoutAside,
+    LayoutHeader,
+    LayoutContent
+  },
+  setup() {
+    const store = useStore()
+
+    const centerClass = computed(() => `layout-center ${store.state.app.aside.opened ? '' : 'small'}`)
+
+    const asideWidth = computed(() => (store.state.app.aside.opened ? variables.asideWidth : variables.asideWidthSmall))
+    return {
+      centerClass,
+      asideWidth,
+      variables
+    }
+  }
+})
+</script>
+<style lang="scss" scoped>
+.layout {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+
+  ::v-deep(.el-aside) {
+    transition: width 0.28s;
+  }
+
+  .layout-center {
+    transition: margin-left 0.28s;
+  }
+}
+</style>

@@ -1,0 +1,46 @@
+@import './transition.scss';
+
+::v-global(html) {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  box-sizing: border-box;
+  font-size: 62.5%; //10px;
+}
+
+::v-global(body) {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;  
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-weight: 400;  
+  font-size: $--size-font-base;  
+  color: $--color-text-base;
+}
+
+::v-global(*,
+*:before,
+*:after) {
+  box-sizing: inherit;
+}
+
+::v-global(a,
+a:focus,
+a:hover) {
+  cursor: pointer;
+  color: inherit;
+  outline: none;
+  text-decoration: none;
+}
+
+::v-global(#app) {
+  height: 100vh;
+}
+
+::v-global(.list-unstyled){
+  padding-left: 0;
+  list-style: none;
+}
