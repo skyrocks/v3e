@@ -134,5 +134,14 @@ export const util = {
       customCache.add(scriptUrl)
       document.body.appendChild(script)
     }
+  },
+
+  /**
+   * 判断JSON是否空
+   * @param obj
+   * @returns
+   */
+  isEmptyObject(obj: any) {
+    return JSON.stringify(obj) === '{}'
   }
 }

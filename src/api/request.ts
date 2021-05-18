@@ -1,9 +1,12 @@
 import { ElMessage } from 'element-plus'
 import { env } from '@/utils'
 import { AxiosRequest, CustomResponse } from './types'
-import { localStore } from '@/utils/storage'
+import { localStore, _ } from '@/utils'
 import instance from './intercept'
 import store from '@/store'
+import { confirm } from '@/plugins'
+import { useRouter } from 'vue-router'
+import { Pagination } from '@/typings'
 
 const headersDefault: object = {
   ContentType: 'application/json;charset=UTF-8'
@@ -57,8 +60,15 @@ const request = (
             data: resp.data?.data
           }
           if (alterErr) {
-            console.log(0, msg)
-            ElMessage.error(msg)
+            if (resp.status === 401) {
+              // 认证失败, 重新登录
+              confirm(`${msg}, 是否重新登录`, () => {
+                const router = useRouter()
+                router.push({ name: 'Logout' })
+              })
+            } else {
+              ElMessage.error(msg)
+            }
           }
           reject(result)
         }
@@ -74,7 +84,6 @@ const request = (
           data: err?.data?.data
         })
         if (alterErr) {
-          console.log(1, msg)
           ElMessage.error(msg)
         }
       })
@@ -94,6 +103,28 @@ const get = (
   return request({ baseURL, headers, method: 'get', url, data, params, responseType }, alterErr)
 }
 
+const getPage = (
+  { baseURL, headers, url, data, params, responseType }: AxiosRequest,
+  page: Pagination,
+  alterErr = true
+): Promise<CustomResponse> => {
+  if (!_.isEmpty(page.filter) || !_.isEmpty(page.sort)) {
+    const newParams = params ? <{ [key: string]: object }>params : {}
+    if (!_.isEmpty(page.filter)) {
+      newParams['filter'] = page.filter
+    }
+    if (!_.isEmpty(page.sort)) {
+      let sortText = ','
+      for (const col in page.sort) {
+        sortText += `${col} ${page.sort[col] === 'descending' ? 'desc' : 'asc'}`
+      }
+      newParams['sort'] = (sortText.substr(1) as unknown) as object
+    }
+    params = newParams
+  }
+  return request({ baseURL, headers, method: 'get', url, data, params, responseType }, alterErr)
+}
+
 const post = (
   { baseURL, headers, url, data, params, responseType }: AxiosRequest,
   alterErr = true
@@ -101,4 +132,4 @@ const post = (
   return request({ baseURL, headers, method: 'post', url, data, params, responseType }, alterErr)
 }
 
-export { get, post }
+export { get, getPage, post }

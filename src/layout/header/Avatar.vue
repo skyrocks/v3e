@@ -1,5 +1,5 @@
 <template>
-  <el-dropdown @command="commandHanlder">
+  <el-dropdown @command="handleCommand">
     <el-image class="avatar" :src="photoUrl" fit="cover">
       <template #error>
         <el-avatar size="medium" fit="cover">
@@ -48,7 +48,7 @@ export default defineComponent({
     onMounted(getPhoto)
 
     const router = useRouter()
-    const commandHanlder = (command: string) => {
+    const handleCommand = (command: string) => {
       if (command === 'Logout') {
         confirm('确定要退出系统吗?', () => {
           // 增加一个中级路由页面, 避免直接使用router.push({ path: '/' }) 而出现同一个路由无法触发调整的情况
@@ -59,7 +59,7 @@ export default defineComponent({
       }
     }
 
-    return { name, photoUrl, commandHanlder }
+    return { name, photoUrl, handleCommand }
   }
 })
 </script>

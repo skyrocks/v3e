@@ -1,5 +1,5 @@
 <template>
-  <el-button ref="btn" v-bind="$attrs">
+  <el-button ref="btn" v-bind="$attrs" size="small" type="primary">
     <template v-for="(value, key) in $slots">
       <slot :name="key"></slot>
     </template>

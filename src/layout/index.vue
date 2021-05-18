@@ -7,7 +7,7 @@
       <el-header :height="variables.headerHeight" style="padding: 0">
         <LayoutHeader />
       </el-header>
-      <el-main>
+      <el-main class="content">
         <LayoutContent />
       </el-main>
     </el-container>
@@ -30,7 +30,7 @@ export default defineComponent({
   setup() {
     const store = useStore()
 
-    const centerClass = computed(() => `layout-center ${store.state.app.aside.opened ? '' : 'small'}`)
+    const centerClass = computed(() => `center ${store.state.app.aside.opened ? '' : 'small'}`)
 
     const asideWidth = computed(() => (store.state.app.aside.opened ? variables.asideWidth : variables.asideWidthSmall))
     return {
@@ -51,8 +51,12 @@ export default defineComponent({
     transition: width 0.28s;
   }
 
-  .layout-center {
+  .center {
     transition: margin-left 0.28s;
+  }
+
+  .content {
+    padding: $--content-top $--content-right $--content-bottom $--content-left;
   }
 }
 </style>

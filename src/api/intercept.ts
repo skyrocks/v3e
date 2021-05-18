@@ -46,6 +46,25 @@ instance.interceptors.request.use(
       pending.push({ url: request.url, method: request.method, params: request.params, data: request.data, cancel: c })
     })
 
+    if (request.params) {
+      /**
+       * axios会对get请求的整个url进行encodeURI，导致有些get方法不能传[]，
+       * 所以在此拦截器中抢先进行encodeURIComponent处理，避开axios的encodeURI
+       * qs.stringify(config.params, {indices: false}) 等方法都不好用,不利用后台参数接收
+       */
+      let url = `${request.url}?`
+      const keys = Object.keys(request.params)
+      for (const key of keys) {
+        let val = request.params[key]
+        if (typeof val === 'object') {
+          val = JSON.stringify(val)
+        }
+        url += `${key}=${encodeURIComponent(val)}&`
+      }
+      request.url = url.substring(0, url.length - 1)
+      request.params = {}
+    }
+
     return request
   },
   error => {

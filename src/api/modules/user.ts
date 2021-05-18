@@ -1,10 +1,11 @@
-import { get } from '../request'
+import { get, getPage } from '../request'
+import { Pagination } from '@/typings'
 
 const ns = '/users' // namespace
 
 export const userApi = {
-  getUser: (params: {}) => {
-    return get({ url: `${ns}/0/50`, params })
+  getUsers: (page: Pagination, params: any = {}) => {
+    return getPage({ url: `${ns}/${page.pageNum}/${page.pageSize}`, params }, page)
   },
 
   browserPhoto: (userId: string) => {

@@ -32,6 +32,10 @@ $--box-shadow-light-small : 0 2px 4px 0 rgba(0, 0, 0, 0.1);  //小的浅阴影
 $--header-height: 50px;
 $--aside-width: 210px;
 $--aside-width-small: 64px;
+$--content-top: 20px;
+$--content-right: 20px;
+$--content-bottom: 5px;
+$--content-left: 20px;
 // $--header-content-space: 24px;
 // $--content-height: calc(100vh - 64px - 24px - 16px);
 // $--sider-content-space: 16px;
@@ -40,6 +44,10 @@ $--aside-width-small: 64px;
   headerHeight: $--header-height;
   asideWidth: $--aside-width;
   asideWidthSmall: $--aside-width-small;
+  contentTop: $--content-top;
+  contentRight: $--content-right;
+  contentBottom: $--content-bottom;
+  contentLeft: $--content-left;
 }
 
 //面包屑
