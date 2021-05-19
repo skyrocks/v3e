@@ -44,3 +44,7 @@ a:hover) {
   padding-left: 0;
   list-style: none;
 }
+
+::v-global(.popover-search) {
+  padding: 0 !important;
+}

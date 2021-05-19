@@ -1,7 +1,6 @@
 <template>
   <div>
     <el-table
-      ref="refTable"
       v-bind="$attrs"
       :height="tableHeight"
       stripe
@@ -9,6 +8,22 @@
       @sort-change="handleSortChange"
       @filter-change="handleFilterChange"
     >
+      <template v-for="(col, key) in tableColumns" :key="key">
+        <el-table-column
+          :label="col.label"
+          :column-key="col.prop"
+          :prop="col.prop"
+          sortable="custom"
+          show-overflow-tooltip
+          :formatter="col.formatter"
+          :filters="col.filters"
+        >
+          <template #header v-if="col.search">
+            {{ col.label }}
+            <Search :prop="col.prop" @search="handleSearch"></Search>
+          </template>
+        </el-table-column>
+      </template>
       <template v-for="(value, key) in $slots">
         <slot :name="key"></slot>
       </template>
@@ -36,17 +51,22 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref, reactive, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import { ElPagination, ElTooltip } from 'element-plus'
 import { util } from '@/utils'
 import variables from '@/styles/variables.scss'
 import { Pagination } from '@/typings'
+import Search from './Search.vue'
 
 const PAGE_SIZE = 30 //默认查询记录数
 
 export default defineComponent({
   name: 'XTable',
   props: {
+    columns: {
+      type: Array,
+      required: true
+    },
     pagination: {
       type: Boolean,
       default: true
@@ -65,13 +85,12 @@ export default defineComponent({
     },
     initQuery: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
-  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip },
+  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, Search },
   emits: ['query'],
   setup(props, { emit }) {
-    const refTable = ref()
     const tableHeight = computed(() => {
       if (props.height > 0) {
         return props.height
@@ -82,6 +101,14 @@ export default defineComponent({
         const height = util.getContentHeight() - contentTop - props.top - 5 - 32 - contentBottom
         return height
       }
+    })
+
+    const tableColumns = computed(() => {
+      const cols: any[] = []
+      props.columns.forEach(col => {
+        cols.push(col)
+      })
+      return cols
     })
 
     const page = reactive<Pagination>({
@@ -121,24 +148,38 @@ export default defineComponent({
       query()
     }
 
+    const handleSearch = ({ prop, value }: any) => {
+      if (value !== '') {
+        page.filter[prop] = value
+      } else {
+        delete page.filter[prop]
+      }
+      query()
+    }
+
     const query = () => {
       emit('query', page)
     }
 
     onMounted(() => {
+      console.log(props.columns)
       if (props.initQuery) {
         query()
       }
     })
 
     return {
-      refTable,
       tableHeight,
+      tableColumns,
       ...toRefs(page),
+
       handleSizeChange,
       handleCurrentChange,
       handleSortChange,
-      handleFilterChange
+      handleFilterChange,
+
+      query,
+      handleSearch
     }
   }
 })

@@ -28,8 +28,6 @@ export function setupElement(app: App<Element>) {
   // 设置语言
   locale.use(lang)
 
-  ElTableColumn.props.sortable.default = 'custom'
-
   app
     .use(ElRow)
     .use(ElCol)

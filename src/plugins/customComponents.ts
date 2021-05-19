@@ -7,4 +7,5 @@ export function setupCustomComponents(app: App) {
   app.component('alIcon', AlIcon)
   app.component('XButton', XButton)
   app.component('XTable', XTable)
+  // app.component('XTableColumn', XTableColumn)
 }
