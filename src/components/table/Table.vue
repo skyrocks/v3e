@@ -10,22 +10,45 @@
     >
       <template v-for="(col, key) in tableColumns" :key="key">
         <el-table-column
+          :width="col.width"
           :label="col.label"
           :column-key="col.prop"
           :prop="col.prop"
-          sortable="custom"
-          show-overflow-tooltip
+          :sortable="col.sortable"
+          :show-overflow-tooltip="col.showOverflowTooltip"
           :formatter="col.formatter"
           :filters="col.filters"
+          :fixed="col.fixed"
         >
-          <template #header v-if="col.search">
-            {{ col.label }}
-            <Search :prop="col.prop" @search="handleSearch"></Search>
+          <template #header v-if="col.search === 'text'">
+            <span :class="searchClass[col.prop]">{{ col.label }}</span>
+            <Search
+              :prop="col.prop"
+              :placement="key === 0 ? 'bottom-start' : key === tableColumns.length - 1 ? 'bottom-end' : 'bottom'"
+              @search="handleSearch"
+            ></Search>
+          </template>
+          <template #default="scope" v-if="$slots[`column-${col.prop}`]">
+            <slot
+              :name="`column-${col.prop}`"
+              v-bind:row="scope.row"
+              v-bind:column="scope.column"
+              v-bind:$index="scope.$index"
+              v-bind:data="scope.row[col.prop]"
+            />
           </template>
         </el-table-column>
       </template>
-      <template v-for="(value, key) in $slots">
-        <slot :name="key"></slot>
+      <template v-if="$slots.append">
+        <slot name="append"></slot>
+      </template>
+
+      <template #empty>
+        <span v-if="loading">
+          <i class="el-icon-loading"></i>
+          数据加载中...
+        </span>
+        <el-empty v-else></el-empty>
       </template>
     </el-table>
     <el-row v-if="pagination" class="bbar">
@@ -52,7 +75,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
-import { ElPagination, ElTooltip } from 'element-plus'
+import { ElPagination, ElTooltip, ElEmpty } from 'element-plus'
 import { util } from '@/utils'
 import variables from '@/styles/variables.scss'
 import { Pagination } from '@/typings'
@@ -60,9 +83,27 @@ import Search from './Search.vue'
 
 const PAGE_SIZE = 30 //默认查询记录数
 
+const COLUMN_DEFAULT = {
+  label: '',
+  prop: '',
+  columnKey: '',
+  sortable: 'custom',
+  showOverflowTooltip: true,
+  formatter: undefined,
+  filters: undefined,
+  width: undefined,
+  fixed: undefined,
+
+  search: 'text'
+}
+
 export default defineComponent({
   name: 'XTable',
   props: {
+    loading: {
+      type: Boolean,
+      default: false
+    },
     columns: {
       type: Array,
       required: true
@@ -88,7 +129,7 @@ export default defineComponent({
       default: false
     }
   },
-  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, Search },
+  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, [ElEmpty.name]: ElEmpty, Search },
   emits: ['query'],
   setup(props, { emit }) {
     const tableHeight = computed(() => {
@@ -105,8 +146,11 @@ export default defineComponent({
 
     const tableColumns = computed(() => {
       const cols: any[] = []
-      props.columns.forEach(col => {
-        cols.push(col)
+      props.columns.forEach((col: any) => {
+        const newCol = Object.assign({}, COLUMN_DEFAULT, col)
+        if (!col.columnKey) newCol.columnKey = col.prop
+        if (col.filters) newCol.search = ''
+        cols.push(newCol)
       })
       return cols
     })
@@ -116,6 +160,14 @@ export default defineComponent({
       pageSize: PAGE_SIZE,
       sort: {},
       filter: {}
+    })
+
+    const searchClass = computed(() => {
+      const cls: any = {}
+      for (const col in page.filter) {
+        cls[col] = 'highlight'
+      }
+      return cls
     })
 
     const handleSizeChange = (ps: number) => {
@@ -173,6 +225,8 @@ export default defineComponent({
       tableColumns,
       ...toRefs(page),
 
+      searchClass,
+
       handleSizeChange,
       handleCurrentChange,
       handleSortChange,
@@ -189,5 +243,8 @@ export default defineComponent({
 .bbar {
   margin-top: 5px;
   padding: 0 10px 0 5px;
+}
+.highlight {
+  color: $--color-text-link;
 }
 </style>

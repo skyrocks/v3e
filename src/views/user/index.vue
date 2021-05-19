@@ -10,21 +10,32 @@
         <x-button icon="el-icon-remove-outline">删除虚拟账号</x-button>
       </el-button-group>
     </div>
-    <x-table :data="resp.list" :total="resp.total" :columns="columns" :top="32" :init-query="true" @query="handleQuery">
-      <el-table-column prop="cellphone" label="ceshi" :sortable="false" />
+    <x-table
+      :data="resp.list"
+      :total="resp.total"
+      :columns="columns"
+      :top="32"
+      :init-query="true"
+      :loading="loading"
+      @query="handleQuery"
+    >
+      <template #column-userStatus="scope">
+        <el-tag v-if="scope.data === 0" type="info" effect="dark" size="mini">禁用</el-tag>
+        <template v-else>启用</template>
+      </template>
     </x-table>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs, ref } from 'vue'
 import { userApi } from '@/api/modules/user'
-import { ElPopover, ElLink } from 'element-plus'
+import { ElPopover, ElLink, ElTag } from 'element-plus'
 import { Pagination } from '@/typings'
 // import Search from '@/components/table/Search.vue'
 
 export default defineComponent({
-  components: { [ElPopover.name]: ElPopover, [ElLink.name]: ElLink },
+  components: { [ElPopover.name]: ElPopover, [ElLink.name]: ElLink, [ElTag.name]: ElTag },
   setup() {
     const tableData = reactive({ resp: { list: [], total: 0 } })
 
@@ -59,45 +70,36 @@ export default defineComponent({
     }
 
     const columns = [
-      { prop: 'loginName', label: '账号' },
-      { prop: 'userName', label: '姓名', search: true },
-      { prop: 'userType', label: '类型', formatter: handleFormatter, filters: filters.userType },
-      { prop: 'userStatus', label: '状态', formatter: handleFormatter, filters: filters.userStatus },
-      { prop: 'expiryDate', label: '有效期' },
-      { prop: 'cellphone', label: '手机号码' },
-      { prop: 'email', label: '邮箱' },
-      { prop: 'expiryDate', label: '头像' },
-      { prop: 'cellphone', label: '角色' },
-      { prop: 'email', label: '修改' }
+      { prop: 'loginName', label: '账号', fixed: true, width: 100 },
+      { prop: 'userName', label: '姓名', fixed: true, width: 100 },
+      { prop: 'userType', label: '类型', formatter: handleFormatter, filters: filters.userType, width: 110 },
+      { prop: 'userStatus', label: '状态', formatter: handleFormatter, filters: filters.userStatus, width: 110 },
+      { prop: 'expiryDate', label: '有效期', width: 110 },
+      { prop: 'cellphone', label: '手机号码', width: 120 },
+      { prop: 'email', label: '邮箱', width: 150 },
+      { prop: 'expiryDate', label: '头像', search: false, sortable: false, width: 100 },
+      { prop: 'cellphone', label: '角色', search: false, sortable: false, width: 120 },
+      { prop: 'email', label: '修改', sortable: false }
     ]
 
+    const loading = ref(false)
     const handleQuery = (page: Pagination) => {
+      loading.value = true
       userApi.getUsers(page).then(resp => {
         if (resp.success) {
           tableData.resp = resp.data
         }
+        loading.value = false
       })
     }
 
-    // const search = ref('')
-    // const handleSearch = (val: any) => {
-    //   console.log(search.value)
-    //   console.log(val)
-    // }
-    // const handleSearchReset = () => {
-    //   search.value = ''
-    //   console.log(search.value)
-    // }
-
     return {
       columns,
+      loading,
+
       ...toRefs(tableData),
       handleQuery,
       handleFormatter
-
-      // search,
-      // handleSearch,
-      // handleSearchReset
     }
   }
 })
