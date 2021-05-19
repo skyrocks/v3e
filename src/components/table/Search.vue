@@ -10,9 +10,11 @@
       <span class="icon-wrap"><i class="el-icon-search"></i></span>
     </template>
     <div>
-      <el-input size="mini" v-model="search" style="padding: 10px" @keyup.enter="handleSearch"></el-input>
+      <el-input size="mini" v-model="modelValue" style="padding: 10px" @keyup.enter="handleSearch"></el-input>
       <div class="split-line">
-        <el-button class="filter-button" type="text" :disabled="search === ''" @click="handleSearch">搜索</el-button>
+        <el-button class="filter-button" type="text" :disabled="modelValue === ''" @click="handleSearch"
+          >搜索</el-button
+        >
         <el-button class="filter-button" type="text" @click="handleSearchReset">重置</el-button>
       </div>
     </div>
@@ -20,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import { ElPopover, ElLink } from 'element-plus'
 
 export default defineComponent({
@@ -29,28 +31,36 @@ export default defineComponent({
       type: String,
       require: true
     },
+    value: {
+      type: String,
+      default: ''
+    },
     placement: {
       type: String,
       default: 'bottom'
     }
   },
-  emits: ['search'],
+  emits: ['search', 'update:value'],
   components: { [ElPopover.name]: ElPopover, [ElLink.name]: ElLink },
   setup(props, { emit }) {
-    const search = ref('')
     const visible = ref(false)
+
+    const modelValue = computed({
+      get: () => props.value,
+      set: val => emit('update:value', val)
+    })
 
     const handleSearch = () => {
       visible.value = false
-      emit('search', { prop: props.prop, value: search.value })
+      emit('search', { prop: props.prop })
     }
     const handleSearchReset = () => {
       visible.value = false
-      search.value = ''
-      emit('search', { prop: props.prop, value: search.value })
+      modelValue.value = ''
+      emit('search', { prop: props.prop })
     }
 
-    return { search, visible, handleSearch, handleSearchReset }
+    return { modelValue, visible, handleSearch, handleSearchReset }
   }
 })
 </script>

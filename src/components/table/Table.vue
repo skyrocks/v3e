@@ -1,6 +1,7 @@
 <template>
   <div>
     <el-table
+      ref="refTable"
       v-bind="$attrs"
       :height="tableHeight"
       stripe
@@ -23,6 +24,7 @@
           <template #header v-if="col.search === 'text'">
             <span :class="searchClass[col.prop]">{{ col.label }}</span>
             <Search
+              v-model:value="searchValue[col.prop]"
               :prop="col.prop"
               :placement="key === 0 ? 'bottom-start' : key === tableColumns.length - 1 ? 'bottom-end' : 'bottom'"
               @search="handleSearch"
@@ -65,8 +67,14 @@
         </el-pagination>
       </el-col>
       <el-col :span="8" style="text-align: right">
-        <el-tooltip class="item" effect="dark" content="下载当前页数据" placement="top-start">
-          <el-button icon="el-icon-download" size="small" circle></el-button>
+        <el-tooltip class="item" effect="dark" content="显示隐藏列" placement="top-start">
+          <el-button icon="el-icon-c-scale-to-original" size="small" circle @click="handleTriggerColumns"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="dark" content="下载当前页数据" placement="top">
+          <el-button icon="el-icon-download" size="small" circle @click="handleDownload"></el-button>
+        </el-tooltip>
+        <el-tooltip class="item" effect="dark" content="清除所有过滤条件" placement="top-end">
+          <el-button icon="el-icon-refresh" size="small" circle @click="handleClearFilters"></el-button>
         </el-tooltip>
       </el-col>
     </el-row>
@@ -74,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
+import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
 import { ElPagination, ElTooltip, ElEmpty } from 'element-plus'
 import { util } from '@/utils'
 import variables from '@/styles/variables.scss'
@@ -132,6 +140,8 @@ export default defineComponent({
   components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, [ElEmpty.name]: ElEmpty, Search },
   emits: ['query'],
   setup(props, { emit }) {
+    const refTable = ref()
+
     const tableHeight = computed(() => {
       if (props.height > 0) {
         return props.height
@@ -169,6 +179,17 @@ export default defineComponent({
       }
       return cls
     })
+    const searchValue = reactive<{ [key: string]: string }>({})
+
+    onMounted(() => {
+      if (props.initQuery) {
+        query()
+      }
+    })
+
+    const query = () => {
+      emit('query', page)
+    }
 
     const handleSizeChange = (ps: number) => {
       page.pageSize = ps
@@ -200,37 +221,51 @@ export default defineComponent({
       query()
     }
 
-    const handleSearch = ({ prop, value }: any) => {
-      if (value !== '') {
-        page.filter[prop] = value
+    const handleSearch = ({ prop }: any) => {
+      if (searchValue[prop] && searchValue[prop] !== '') {
+        page.filter[prop] = searchValue[prop]
       } else {
         delete page.filter[prop]
       }
       query()
     }
 
-    const query = () => {
-      emit('query', page)
+    const handleTriggerColumns = () => {
+      //
     }
 
-    onMounted(() => {
-      console.log(props.columns)
-      if (props.initQuery) {
-        query()
+    const handleDownload = () => {
+      //
+    }
+
+    const handleClearFilters = () => {
+      for (const prop in searchValue) {
+        delete searchValue[prop]
       }
-    })
+      refTable.value.clearFilter()
+      for (const col in page.filter) {
+        delete page.filter[col]
+      }
+      query()
+    }
 
     return {
+      refTable,
       tableHeight,
       tableColumns,
       ...toRefs(page),
 
+      searchValue,
       searchClass,
 
       handleSizeChange,
       handleCurrentChange,
       handleSortChange,
       handleFilterChange,
+
+      handleTriggerColumns,
+      handleDownload,
+      handleClearFilters,
 
       query,
       handleSearch
