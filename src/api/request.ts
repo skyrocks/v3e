@@ -38,27 +38,18 @@ const request = (
             }
           } else {
             // 正常返回
-            const result = {
+            resolve({
               status: resp.status,
               statusText: resp.statusText,
               origin: resp.data,
               success: resp.data.success,
               message: resp.data?.message,
               data: resp.data?.data
-            }
-            resolve(result)
+            })
           }
         } else {
           // 错误范围
           const msg = resp.data?.message || url + '请求失败'
-          const result = {
-            status: resp.status,
-            statusText: resp.statusText,
-            origin: resp.data,
-            success: false,
-            message: msg,
-            data: resp.data?.data
-          }
           if (alterErr) {
             if (resp.status === 401) {
               // 认证失败, 重新登录
@@ -70,11 +61,29 @@ const request = (
               ElMessage.error(msg)
             }
           }
-          reject(result)
+          reject({
+            status: resp.status,
+            statusText: resp.statusText,
+            origin: resp.data,
+            success: false,
+            message: msg,
+            data: resp.data?.data
+          })
         }
       })
       .catch(err => {
         const msg = err?.data?.message || err?.message || url + '请求失败'
+        if (alterErr) {
+          if (err.status === 401) {
+            // 认证失败, 重新登录
+            confirm(`${msg}, 是否重新登录`, () => {
+              const router = useRouter()
+              router.push({ name: 'Logout' })
+            })
+          } else {
+            ElMessage.error(msg)
+          }
+        }
         reject({
           status: err.status,
           statusText: err?.data?.message || err?.message,
@@ -83,9 +92,6 @@ const request = (
           message: msg,
           data: err?.data?.data
         })
-        if (alterErr) {
-          ElMessage.error(msg)
-        }
       })
   })
 }

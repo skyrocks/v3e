@@ -17,10 +17,9 @@ export const permission = {
 
     let currentFuncKeys: string[] = []
     if (menuId) {
-      currentFuncKeys = store.getters['menu/menuIndex'][menuId]?.funcKeys?.split(',')
+      currentFuncKeys = store.getters['menu/menuIndex'][menuId]?.funcKeys
     } else {
-      // @ts-ignore
-      currentFuncKeys = currentRoute.meta?.funcKeys?.split(',')
+      currentFuncKeys = currentRoute.meta?.funcKeys as string[]
     }
 
     const has = currentFuncKeys.includes(action)

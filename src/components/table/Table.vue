@@ -30,9 +30,9 @@
               @search="handleSearch"
             ></Search>
           </template>
-          <template #default="scope" v-if="$slots[`column-${col.prop}`]">
+          <template #default="scope" v-if="$slots[`column-${col.scope}`]">
             <slot
-              :name="`column-${col.prop}`"
+              :name="`column-${col.scope}`"
               v-bind:row="scope.row"
               v-bind:column="scope.column"
               v-bind:$index="scope.$index"
@@ -102,7 +102,8 @@ const COLUMN_DEFAULT = {
   width: undefined,
   fixed: undefined,
 
-  search: 'text'
+  search: 'text',
+  scope: ''
 }
 
 export default defineComponent({
@@ -160,6 +161,7 @@ export default defineComponent({
         const newCol = Object.assign({}, COLUMN_DEFAULT, col)
         if (!col.columnKey) newCol.columnKey = col.prop
         if (col.filters) newCol.search = ''
+        if (!col.scope) newCol.scope = col.prop
         cols.push(newCol)
       })
       return cols

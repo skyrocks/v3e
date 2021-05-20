@@ -13,6 +13,7 @@ interface PendingType {
 const pending: Array<PendingType> = []
 
 // 检查并移除重复请求
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const removePending = (req: AxiosRequestConfig) => {
   for (const key in pending) {
     const item: PendingType = pending[key]
@@ -40,11 +41,11 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
   request => {
-    removePending(request)
+    // removePending(request)
 
-    request.cancelToken = new axios.CancelToken(c => {
-      pending.push({ url: request.url, method: request.method, params: request.params, data: request.data, cancel: c })
-    })
+    // request.cancelToken = new axios.CancelToken(c => {
+    //   pending.push({ url: request.url, method: request.method, params: request.params, data: request.data, cancel: c })
+    // })
 
     if (request.params) {
       /**
@@ -75,7 +76,7 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
   response => {
-    removePending(response.config)
+    // removePending(response.config)
 
     return response
   },

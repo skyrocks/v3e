@@ -23,20 +23,69 @@
         <el-tag v-if="scope.data === 0" type="info" effect="dark" size="mini">禁用</el-tag>
         <template v-else>启用</template>
       </template>
+      <template #column-photo="scope">
+        <el-image class="photo" :src="`${photoUrls[scope.data]}`" fit="cover">
+          <template #error>
+            <div class="image-slot">
+              <i class="el-icon-user"></i>
+            </div>
+          </template>
+        </el-image>
+      </template>
+      <template #column-role="scope">
+        <el-popover v-if="scope.row.roles.length > 0" trigger="hover" placement="left" :width="300">
+          <el-space wrap>
+            <el-tag
+              v-for="(r, i) in scope.row.roles"
+              :key="i"
+              :closable="allow.edit"
+              :disable-transitions="true"
+              @close="onRemoveRole(scope.row, r.roleId, i)"
+            >
+              {{ r.roleName }}
+            </el-tag>
+            <x-button v-if="allow.edit" size="mini" x-type="white" icon="el-icon-plus">添加角色</x-button>
+          </el-space>
+          <template #reference>
+            <span v-if="scope.row.roles.length > 1">{{ scope.row.roles.length }} 个角色</span>
+            <span v-else-if="scope.row.roles.length === 1">{{ scope.row.roles[0].roleName }}</span>
+            <template v-else></template>
+          </template>
+        </el-popover>
+        <x-button v-else-if="scope.row.roles.length === 0 && allow.edit" x-type="white" size="mini" icon="el-icon-plus"
+          >添加角色</x-button
+        >
+        <template v-else></template>
+      </template>
+      <template #column-edit>
+        <x-button size="mini" x-type="white" icon="el-icon-edit">修改</x-button>
+      </template>
     </x-table>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref } from 'vue'
+import { defineComponent, reactive, toRefs, ref, computed } from 'vue'
 import { userApi } from '@/api/modules/user'
-import { ElPopover, ElLink, ElTag } from 'element-plus'
+import { ElPopover, ElLink, ElTag, ElImage, ElSpace } from 'element-plus'
 import { Pagination } from '@/typings'
-// import Search from '@/components/table/Search.vue'
+import { permission } from '@/utils/index'
 
 export default defineComponent({
-  components: { [ElPopover.name]: ElPopover, [ElLink.name]: ElLink, [ElTag.name]: ElTag },
+  components: {
+    [ElPopover.name]: ElPopover,
+    [ElLink.name]: ElLink,
+    [ElTag.name]: ElTag,
+    [ElImage.name]: ElImage,
+    [ElSpace.name]: ElSpace
+  },
   setup() {
+    const allow = computed(() => {
+      return {
+        edit: permission.has('EditRole')
+      }
+    })
+
     const tableData = reactive({ resp: { list: [], total: 0 } })
 
     const filters = {
@@ -77,9 +126,17 @@ export default defineComponent({
       { prop: 'expiryDate', label: '有效期', width: 110 },
       { prop: 'cellphone', label: '手机号码', width: 120 },
       { prop: 'email', label: '邮箱', width: 150 },
-      { prop: 'expiryDate', label: '头像', search: false, sortable: false, width: 100 },
-      { prop: 'cellphone', label: '角色', search: false, sortable: false, width: 120 },
-      { prop: 'email', label: '修改', sortable: false }
+      { prop: 'userId', scope: 'photo', label: '头像', search: false, sortable: false, width: 100 },
+      {
+        prop: 'userId',
+        scope: 'role',
+        label: '角色',
+        search: false,
+        sortable: false,
+        showOverflowTooltip: false,
+        width: 125
+      },
+      { prop: 'userId', scope: 'edit', label: '修改', search: false, sortable: false }
     ]
 
     const loading = ref(false)
@@ -90,16 +147,43 @@ export default defineComponent({
           tableData.resp = resp.data
         }
         loading.value = false
+
+        resp.data.list.forEach((user: any) => {
+          if (user.existsPhoto) {
+            getPhoto(user.userId)
+          }
+        })
       })
+    }
+
+    const photoUrls = reactive<{ [key: string]: any }>({})
+    const getPhoto = (userId: string) => {
+      if (!photoUrls[userId]) {
+        userApi.browserPhoto(userId).then(res => {
+          photoUrls[userId] = URL.createObjectURL(new Blob([res.origin]))
+          //const { index, row } = this.$refs.grid.getRow('userId', userId)
+          // table刷新字段
+          //this.$refs.grid.updateRow(index, row)
+        })
+      }
+    }
+
+    const onRemoveRole = () => {
+      console.log('onRemoveRole')
     }
 
     return {
       columns,
       loading,
 
+      photoUrls,
+
       ...toRefs(tableData),
       handleQuery,
-      handleFormatter
+      handleFormatter,
+
+      allow,
+      onRemoveRole
     }
   }
 })
@@ -137,5 +221,24 @@ export default defineComponent({
   &.el-link--inner:hover {
     text-decoration: none !important;
   }
+}
+.photo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: $--size-font-medium;
+  color: $--color-text-placeholder;
+  background-color: $--color-bg-base;
+  vertical-align: middle;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  border-radius: 50%;
 }
 </style>
