@@ -21,22 +21,22 @@
           :filters="col.filters"
           :fixed="col.fixed"
         >
-          <template #header v-if="col.search === 'text'">
+          <template v-if="col.search === 'text'" #header>
             <span :class="searchClass[col.prop]">{{ col.label }}</span>
             <Search
               v-model:value="searchValue[col.prop]"
               :prop="col.prop"
-              :placement="key === 0 ? 'bottom-start' : key === tableColumns.length - 1 ? 'bottom-end' : 'bottom'"
+              :placement="key === tableColumns.length - 1 ? 'bottom-end' : 'bottom'"
               @search="handleSearch"
             ></Search>
           </template>
-          <template #default="scope" v-if="$slots[`column-${col.scope}`]">
+          <template v-if="$slots[`column-${col.scope}`]" #default="scope">
             <slot
               :name="`column-${col.scope}`"
-              v-bind:row="scope.row"
-              v-bind:column="scope.column"
-              v-bind:$index="scope.$index"
-              v-bind:data="scope.row[col.prop]"
+              :row="scope.row"
+              :column="scope.column"
+              :$index="scope.$index"
+              :data="scope.row[col.prop]"
             />
           </template>
         </el-table-column>
@@ -44,7 +44,6 @@
       <template v-if="$slots.append">
         <slot name="append"></slot>
       </template>
-
       <template #empty>
         <span v-if="loading">
           <i class="el-icon-loading"></i>
@@ -56,13 +55,13 @@
     <el-row v-if="pagination" class="bbar">
       <el-col :span="16">
         <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :currentPage="pageNum"
+          :current-page="pageNum"
           :page-sizes="[15, 30, 50, 100, 200, 300, 500]"
           :page-size="pageSize"
           layout="total, sizes, prev, pager, next, jumper"
           :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
         >
         </el-pagination>
       </el-col>
@@ -108,6 +107,7 @@ const COLUMN_DEFAULT = {
 
 export default defineComponent({
   name: 'XTable',
+  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, [ElEmpty.name]: ElEmpty, Search },
   props: {
     loading: {
       type: Boolean,
@@ -138,7 +138,6 @@ export default defineComponent({
       default: false
     }
   },
-  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, [ElEmpty.name]: ElEmpty, Search },
   emits: ['query'],
   setup(props, { emit }) {
     const refTable = ref()

@@ -1,16 +1,16 @@
 <template>
   <el-popover
+    v-model:visible="visible"
     :placement="placement"
     :width="150"
     popper-class="popover-search"
     trigger="click"
-    v-model:visible="visible"
   >
     <template #reference>
       <span class="icon-wrap"><i class="el-icon-search"></i></span>
     </template>
     <div>
-      <el-input size="mini" v-model="modelValue" style="padding: 10px" @keyup.enter="handleSearch"></el-input>
+      <el-input v-model="modelValue" size="mini" style="padding: 10px" @keyup.enter="handleSearch"></el-input>
       <div class="split-line">
         <el-button class="filter-button" type="text" :disabled="modelValue === ''" @click="handleSearch"
           >搜索</el-button
@@ -26,10 +26,12 @@ import { defineComponent, ref, computed } from 'vue'
 import { ElPopover, ElLink } from 'element-plus'
 
 export default defineComponent({
+  components: { [ElPopover.name]: ElPopover, [ElLink.name]: ElLink },
   props: {
     prop: {
       type: String,
-      require: true
+      require: true,
+      default: ''
     },
     value: {
       type: String,
@@ -41,7 +43,6 @@ export default defineComponent({
     }
   },
   emits: ['search', 'update:value'],
-  components: { [ElPopover.name]: ElPopover, [ElLink.name]: ElLink },
   setup(props, { emit }) {
     const visible = ref(false)
 

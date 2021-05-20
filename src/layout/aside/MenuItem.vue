@@ -2,10 +2,10 @@
   <template v-if="menuInfo.hidden == 0">
     <el-submenu v-if="menuInfo.children.length > 0" :index="menuInfo.menuId">
       <template #title>
-        <al-icon :icon="menuInfo.iconClass" class-name="icon" v-if="menuInfo.iconClass" />
+        <al-icon v-if="menuInfo.iconClass" :icon="menuInfo.iconClass" class-name="icon" />
         <span>{{ menuInfo.menuName }}</span>
       </template>
-      <template v-for="item in menuInfo.children" :index="item.menuId" :key="item.menuId">
+      <template v-for="item in menuInfo.children" :key="item.menuId" :index="item.menuId">
         <template v-if="item.children.length === 0 && menuInfo.hidden == 0">
           <el-menu-item :index="item.menuId">
             <span>{{ item.menuName }}</span>
@@ -17,7 +17,7 @@
       </template>
     </el-submenu>
     <el-menu-item v-else :index="menuInfo.menuId">
-      <al-icon :icon="menuInfo.iconClass" class-name="icon" v-if="menuInfo.iconClass" />
+      <al-icon v-if="menuInfo.iconClass" :icon="menuInfo.iconClass" class-name="icon" />
       <template #title>{{ menuInfo.menuName }}</template>
     </el-menu-item>
   </template>
