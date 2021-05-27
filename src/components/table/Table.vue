@@ -9,8 +9,10 @@
       @sort-change="handleSortChange"
       @filter-change="handleFilterChange"
     >
+      <el-table-column v-if="selection" type="selection" :with="55" />
       <template v-for="(col, key) in tableColumns" :key="key">
         <el-table-column
+          v-if="col.isShow"
           :width="col.width"
           :label="col.label"
           :column-key="col.prop"
@@ -26,7 +28,7 @@
             <Search
               v-model:value="searchValue[col.prop]"
               :prop="col.prop"
-              :placement="key === tableColumns.length - 1 ? 'bottom-end' : 'bottom'"
+              :placement="key === 0 ? 'bottom-start' : key === tableColumns.length - 1 ? 'bottom-end' : 'bottom'"
               @search="handleSearch"
             ></Search>
           </template>
@@ -66,9 +68,19 @@
         </el-pagination>
       </el-col>
       <el-col :span="8" style="text-align: right">
-        <el-tooltip class="item" effect="dark" content="显示隐藏列" placement="top-start">
-          <el-button icon="el-icon-c-scale-to-original" size="small" circle @click="handleTriggerColumns"></el-button>
-        </el-tooltip>
+        <el-popover placement="top-end" :width="100" trigger="hover">
+          <template #reference>
+            <el-button icon="el-icon-c-scale-to-original" size="small" circle></el-button>
+          </template>
+          <div>
+            <span>显示隐藏列</span>
+            <ul class="list-unstyled columns-list">
+              <li v-for="(col, key) in tableColumns" :key="key">
+                <el-checkbox v-model="col.isShow">{{ col.label }}</el-checkbox>
+              </li>
+            </ul>
+          </div>
+        </el-popover>
         <el-tooltip class="item" effect="dark" content="下载当前页数据" placement="top">
           <el-button icon="el-icon-download" size="small" circle @click="handleDownload"></el-button>
         </el-tooltip>
@@ -81,16 +93,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, reactive, ref, toRefs } from 'vue'
-import { ElPagination, ElTooltip, ElEmpty } from 'element-plus'
+import { computed, defineComponent, onMounted, PropType, reactive, ref, toRefs } from 'vue'
+import { ElPagination, ElTooltip, ElEmpty, ElPopover, ElCheckbox } from 'element-plus'
 import { util } from '@/utils'
 import variables from '@/styles/variables.scss'
 import { Pagination } from '@/typings'
+import { Column } from './types'
 import Search from './Search.vue'
 
 const PAGE_SIZE = 30 //默认查询记录数
 
-const COLUMN_DEFAULT = {
+const COLUMN_DEFAULT: Column = {
   label: '',
   prop: '',
   columnKey: '',
@@ -102,20 +115,33 @@ const COLUMN_DEFAULT = {
   fixed: undefined,
 
   search: 'text',
-  scope: ''
+  scope: '',
+  isShow: true,
+  isExport: true
 }
 
 export default defineComponent({
   name: 'XTable',
-  components: { [ElPagination.name]: ElPagination, [ElTooltip.name]: ElTooltip, [ElEmpty.name]: ElEmpty, Search },
+  components: {
+    [ElPagination.name]: ElPagination,
+    [ElTooltip.name]: ElTooltip,
+    [ElEmpty.name]: ElEmpty,
+    [ElPopover.name]: ElPopover,
+    [ElCheckbox.name]: ElCheckbox,
+    Search
+  },
   props: {
     loading: {
       type: Boolean,
       default: false
     },
     columns: {
-      type: Array,
+      type: Array as PropType<Column[]>,
       required: true
+    },
+    selection: {
+      type: Boolean,
+      default: true
     },
     pagination: {
       type: Boolean,
@@ -155,7 +181,7 @@ export default defineComponent({
     })
 
     const tableColumns = computed(() => {
-      const cols: any[] = []
+      const cols = reactive<any[]>([])
       props.columns.forEach((col: any) => {
         const newCol = Object.assign({}, COLUMN_DEFAULT, col)
         if (!col.columnKey) newCol.columnKey = col.prop
@@ -231,12 +257,41 @@ export default defineComponent({
       query()
     }
 
-    const handleTriggerColumns = () => {
-      //
-    }
-
     const handleDownload = () => {
-      //
+      const cols = tableColumns.value.filter(col => col.isShow)
+
+      const tableChildren = refTable.value.$el.children
+      let list: any
+      tableChildren.forEach((ele: any) => {
+        if (ele.classList.contains('el-table__body-wrapper')) {
+          list = ele.children[0].children[1].children
+        }
+      })
+
+      const dataList: any[] = []
+      if (list) {
+        list.forEach((tr: any) => {
+          const tds = tr.children
+          const data: { [key: string]: string } = {}
+          for (let i = props.selection ? 1 : 0; i < tds.length; i++) {
+            const col = cols[props.selection ? i - 1 : i]
+            if (col.isExport) {
+              if (tds[i].classList.contains('is-hidden')) {
+                // fixed列
+                data[col.prop] = tds[i].innerHTML.replace(/<.*?>/g, '')
+              } else {
+                data[col.prop] = tds[i].innerText
+              }
+            }
+          }
+          dataList.push(data)
+        })
+      }
+      util.export2Excel(
+        cols.filter(col => col.isExport),
+        dataList,
+        '导出数据'
+      )
     }
 
     const handleClearFilters = () => {
@@ -264,7 +319,6 @@ export default defineComponent({
       handleSortChange,
       handleFilterChange,
 
-      handleTriggerColumns,
       handleDownload,
       handleClearFilters,
 
@@ -282,5 +336,9 @@ export default defineComponent({
 }
 .highlight {
   color: $--color-text-link;
+}
+.columns-list {
+  margin: 0;
+  padding-top: 6px;
 }
 </style>

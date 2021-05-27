@@ -126,7 +126,7 @@ export default defineComponent({
       { prop: 'expiryDate', label: '有效期', width: 110 },
       { prop: 'cellphone', label: '手机号码', width: 120 },
       { prop: 'email', label: '邮箱', width: 150 },
-      { prop: 'userId', scope: 'photo', label: '头像', search: false, sortable: false, width: 100 },
+      { prop: 'userId', scope: 'photo', label: '头像', search: false, sortable: false, width: 100, isExport: false },
       {
         prop: 'userId',
         scope: 'role',
@@ -134,9 +134,10 @@ export default defineComponent({
         search: false,
         sortable: false,
         showOverflowTooltip: false,
-        width: 125
+        width: 125,
+        isExport: false
       },
-      { prop: 'userId', scope: 'edit', label: '修改', search: false, sortable: false }
+      { prop: 'userId', scope: 'edit', label: '修改', search: false, sortable: false, isExport: false }
     ]
 
     const loading = ref(false)

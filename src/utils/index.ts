@@ -6,12 +6,14 @@ export { env } from './env'
 export { log } from './log'
 export { permission } from './permission'
 export { token } from './token'
+import { export2Excel } from './excel'
 
 export { default as _ } from 'lodash'
 
 const customCache = new Set()
 
 export const util = {
+  export2Excel: export2Excel,
   /**
    * 数字转换成英文字母
    * @param num
