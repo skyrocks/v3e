@@ -46,7 +46,7 @@ const createRouteList = (data: Menu[], parentPath: string): RouteRecordRaw[] => 
             try {
               resolve(require(`@/views/${_.camelCase(ele.component)}/index.vue`).default)
             } catch (err) {
-              console.error(err)
+              // console.error(err)
               resolve(require('@/views/error/ErrComp.vue'))
             }
           }),

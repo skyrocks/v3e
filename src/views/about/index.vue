@@ -17,7 +17,7 @@ export default defineComponent({
     const currentRoute = useRoute()
 
     const clickHandler = () => {
-      console.log('about page')
+      // console.log('about page')
     }
     return {
       currentRoute,

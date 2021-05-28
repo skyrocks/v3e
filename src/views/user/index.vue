@@ -170,7 +170,7 @@ export default defineComponent({
     }
 
     const onRemoveRole = () => {
-      console.log('onRemoveRole')
+      // console.log('onRemoveRole')
     }
 
     return {

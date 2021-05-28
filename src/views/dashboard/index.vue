@@ -10,23 +10,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, inject } from 'vue'
+import { defineComponent } from 'vue'
+// import { defineComponent, getCurrentInstance, inject } from 'vue'
 // import { userApi } from '@/api/modules/user'
 // import { menuApi } from '@/api/modules/menu'
 import { log } from '@/utils'
 
 export default defineComponent({
   setup() {
-    const { proxy } = getCurrentInstance() as any
+    // const { proxy } = getCurrentInstance() as any
 
-    const hasPermission = inject('$hasPermission') as any
+    // const hasPermission = inject('$hasPermission') as any
 
     const testErrorPathRequestHandle = () => {
-      console.log(proxy.$hasPermission('add'))
-      console.log(proxy.$hasPermission('add', 'system'))
-
-      console.log('inject', hasPermission('add'))
-      console.log('inject', hasPermission('add', 'system'))
+      // console.log(proxy.$hasPermission('add'))
+      // console.log(proxy.$hasPermission('add', 'system'))
+      // console.log('inject', hasPermission('add'))
+      // console.log('inject', hasPermission('add', 'system'))
       /*
       userApi.getUserPath({}).then(resp => {
         if (resp.success) {
@@ -68,7 +68,7 @@ export default defineComponent({
     }
 
     const testXButtonHandler = () => {
-      console.log('testXButtonHandler')
+      // console.log('testXButtonHandler')
     }
 
     return {
