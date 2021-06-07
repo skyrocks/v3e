@@ -8,7 +8,6 @@ import { _ } from '@/utils'
 
 const addDynamicRoute = () => {
   router.addRoute(createDynamicRoute(store.getters['menu/menus']))
-
   errorRoutes.forEach((route: RouteRecordRaw) => {
     router.addRoute(route)
   })
@@ -51,7 +50,7 @@ const createRouteList = (data: Menu[], parentPath: string): RouteRecordRaw[] => 
             }
           }),
         // component: () => Promise.resolve(require(`@/views/${ele.component}/index.vue`).default),
-        meta: { title: ele.menuName, funcKeys: ele.funcKeys }
+        meta: { title: ele.menuName, funcKeys: ele.funcKeys, affix: ele.affix }
       })
     }
   })

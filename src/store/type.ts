@@ -21,4 +21,5 @@ export interface Menu {
   hidden: number
   funcKeys: string
   children: Menu[]
+  affix: boolean
 }

@@ -30,18 +30,20 @@ $--box-shadow-light : 0 2px 12px 0 rgba(0, 0, 0, 0.1);  //浅阴影
 $--box-shadow-light-small : 0 2px 4px 0 rgba(0, 0, 0, 0.1);  //小的浅阴影
 
 $--header-height: 50px;
+$--tags-height: 34px;
 $--aside-width: 210px;
 $--aside-width-small: 64px;
-$--content-top: 20px;
-$--content-right: 20px;
+$--content-top: 15px;
+$--content-right: 15px;
 $--content-bottom: 5px;
-$--content-left: 20px;
+$--content-left: 15px;
 // $--header-content-space: 24px;
 // $--content-height: calc(100vh - 64px - 24px - 16px);
 // $--sider-content-space: 16px;
 
 :export {
   headerHeight: $--header-height;
+  tagsHeight: $--tags-height;
   asideWidth: $--aside-width;
   asideWidthSmall: $--aside-width-small;
   contentTop: $--content-top;

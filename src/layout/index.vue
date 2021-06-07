@@ -4,8 +4,9 @@
       <LayoutAside />
     </el-aside>
     <el-container :class="centerClass">
-      <el-header :height="variables.headerHeight" style="padding: 0">
+      <el-header :height="headerHeight" style="padding: 0">
         <LayoutHeader />
+        <LayoutTags />
       </el-header>
       <el-main class="content">
         <LayoutContent />
@@ -17,6 +18,7 @@
 import { computed, defineComponent } from 'vue'
 import LayoutAside from './aside/index.vue'
 import LayoutHeader from './header/index.vue'
+import LayoutTags from './tags/index.vue'
 import LayoutContent from './content/index.vue'
 import { useStore } from 'vuex'
 import variables from '@/styles/variables.scss'
@@ -25,6 +27,7 @@ export default defineComponent({
   components: {
     LayoutAside,
     LayoutHeader,
+    LayoutTags,
     LayoutContent
   },
   setup() {
@@ -33,7 +36,15 @@ export default defineComponent({
     const centerClass = computed(() => `center ${store.state.app.aside.opened ? '' : 'small'}`)
 
     const asideWidth = computed(() => (store.state.app.aside.opened ? variables.asideWidth : variables.asideWidthSmall))
+
+    const headerHeight = computed(() => {
+      return `${
+        Number(variables.headerHeight.substring(0, variables.headerHeight.length - 2)) +
+        Number(variables.tagsHeight.substring(0, variables.tagsHeight.length - 2))
+      }px`
+    })
     return {
+      headerHeight,
       centerClass,
       asideWidth,
       variables

@@ -10,7 +10,8 @@ const dashboard = {
   iconClass: 'al-zhuye',
   hidden: 0,
   funcKeys: 'add',
-  children: []
+  children: [],
+  affix: true //初始添加到tags
 }
 const me = {
   menuId: 'Me',
@@ -21,7 +22,8 @@ const me = {
   iconClass: '',
   hidden: 1,
   funcKeys: '',
-  children: []
+  children: [],
+  affix: false
 }
 
 interface StateType {

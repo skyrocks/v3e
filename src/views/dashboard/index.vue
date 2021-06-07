@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onMounted } from 'vue'
 // import { defineComponent, getCurrentInstance, inject } from 'vue'
 // import { userApi } from '@/api/modules/user'
 // import { menuApi } from '@/api/modules/menu'

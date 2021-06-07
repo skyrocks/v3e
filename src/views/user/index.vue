@@ -1,15 +1,13 @@
 <template>
   <div>
-    <div style="padding: 0 10px">
-      <el-button-group>
-        <x-button icon="el-icon-key">激活</x-button>
-        <x-button icon="el-icon-lock">禁用</x-button>
-        <x-button icon="el-icon-edit-outline">修改密码</x-button>
-        <x-button icon="el-icon-edit">修改有效期</x-button>
-        <x-button icon="el-icon-circle-plus-outline">添加虚拟账号</x-button>
-        <x-button icon="el-icon-remove-outline">删除虚拟账号</x-button>
-      </el-button-group>
-    </div>
+    <el-button-group>
+      <x-button icon="el-icon-key">激活</x-button>
+      <x-button icon="el-icon-lock">禁用</x-button>
+      <x-button icon="el-icon-edit-outline">修改密码</x-button>
+      <x-button icon="el-icon-edit">修改有效期</x-button>
+      <x-button icon="el-icon-circle-plus-outline">添加虚拟账号</x-button>
+      <x-button icon="el-icon-remove-outline">删除虚拟账号</x-button>
+    </el-button-group>
     <x-table
       :data="resp.list"
       :total="resp.total"

@@ -37,7 +37,8 @@ export const util = {
    */
   getContentHeight(): number {
     const header = +variables.headerHeight.substring(0, variables.headerHeight.length - 2)
-    return util.getAppHeight() - header
+    const tags = +variables.tagsHeight.substring(0, variables.tagsHeight.length - 2)
+    return util.getAppHeight() - header - tags
   },
 
   /**
