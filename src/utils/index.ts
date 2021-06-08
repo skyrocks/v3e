@@ -2,13 +2,14 @@ import variables from '@/styles/variables.scss'
 export { cookie } from './storage/cookie'
 export { localStore } from './storage/localStore'
 export { sessionStore } from './storage/sessionStore'
-export { env } from './env'
+import { env } from './env'
 export { log } from './log'
 export { permission } from './permission'
 export { token } from './token'
 import { export2Excel } from './excel'
 
 export { default as _ } from 'lodash'
+export { env }
 
 const customCache = new Set()
 
@@ -24,6 +25,14 @@ export const util = {
   },
 
   /**
+   * 多页签模式
+   * @returns
+   */
+  isTagsMode(): boolean {
+    return env.VUE_APP_TAGS === '1'
+  },
+
+  /**
    * 获取App高度
    * @returns
    */
@@ -32,13 +41,21 @@ export const util = {
   },
 
   /**
+   * 获取Header高度
+   * @returns
+   */
+  getHeaderHeight(): number {
+    const header = +variables.headerHeight.substring(0, variables.headerHeight.length - 2)
+    const tags = util.isTagsMode() ? +variables.tagsHeight.substring(0, variables.tagsHeight.length - 2) : 0
+    return header + tags
+  },
+
+  /**
    * 获取Content高度
    * @returns
    */
   getContentHeight(): number {
-    const header = +variables.headerHeight.substring(0, variables.headerHeight.length - 2)
-    const tags = +variables.tagsHeight.substring(0, variables.tagsHeight.length - 2)
-    return util.getAppHeight() - header - tags
+    return util.getAppHeight() - util.getHeaderHeight()
   },
 
   /**

@@ -6,7 +6,9 @@
     <el-container :class="centerClass">
       <el-header :height="headerHeight" style="padding: 0">
         <LayoutHeader />
-        <LayoutTags />
+        <template v-if="isTagsMode">
+          <LayoutTags />
+        </template>
       </el-header>
       <el-main class="content">
         <LayoutContent />
@@ -22,6 +24,7 @@ import LayoutTags from './tags/index.vue'
 import LayoutContent from './content/index.vue'
 import { useStore } from 'vuex'
 import variables from '@/styles/variables.scss'
+import { util } from '@/utils'
 
 export default defineComponent({
   components: {
@@ -37,13 +40,12 @@ export default defineComponent({
 
     const asideWidth = computed(() => (store.state.app.aside.opened ? variables.asideWidth : variables.asideWidthSmall))
 
-    const headerHeight = computed(() => {
-      return `${
-        Number(variables.headerHeight.substring(0, variables.headerHeight.length - 2)) +
-        Number(variables.tagsHeight.substring(0, variables.tagsHeight.length - 2))
-      }px`
-    })
+    const isTagsMode = computed(() => util.isTagsMode())
+
+    const headerHeight = computed(() => `${util.getHeaderHeight()}px`)
+
     return {
+      isTagsMode,
       headerHeight,
       centerClass,
       asideWidth,

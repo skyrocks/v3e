@@ -91,6 +91,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
+      console.log('tags onMounted')
       initTags()
       addTags()
     })
