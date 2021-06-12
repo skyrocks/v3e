@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-table
-      ref="refTable"
+      ref="table"
       v-bind="$attrs"
       :height="tableHeight"
       stripe
@@ -166,7 +166,7 @@ export default defineComponent({
   },
   emits: ['query'],
   setup(props, { emit }) {
-    const refTable = ref()
+    const table = ref()
 
     const tableHeight = computed(() => {
       if (props.height > 0) {
@@ -181,8 +181,8 @@ export default defineComponent({
     })
 
     const tableColumns = computed(() => {
-      const cols = reactive<any[]>([])
-      props.columns.forEach((col: any) => {
+      const cols = reactive<Column[]>([])
+      props.columns.forEach((col: Column) => {
         const newCol = Object.assign({}, COLUMN_DEFAULT, col)
         if (!col.columnKey) newCol.columnKey = col.prop
         if (col.filters) newCol.search = ''
@@ -200,7 +200,7 @@ export default defineComponent({
     })
 
     const searchClass = computed(() => {
-      const cls: any = {}
+      const cls: { [key: string]: string } = {}
       for (const col in page.filter) {
         cls[col] = 'highlight'
       }
@@ -236,7 +236,7 @@ export default defineComponent({
       query()
     }
 
-    const handleFilterChange = (filters: any) => {
+    const handleFilterChange = (filters: string[]) => {
       for (const col in filters) {
         const val = filters[col]
         if (val.length > 0) {
@@ -260,7 +260,7 @@ export default defineComponent({
     const handleDownload = () => {
       const cols = tableColumns.value.filter(col => col.isShow)
 
-      const tableChildren = refTable.value.$el.children
+      const tableChildren = table.value.$el.children
       let list: any
       tableChildren.forEach((ele: any) => {
         if (ele.classList.contains('el-table__body-wrapper')) {
@@ -298,7 +298,7 @@ export default defineComponent({
       for (const prop in searchValue) {
         delete searchValue[prop]
       }
-      refTable.value.clearFilter()
+      table.value.clearFilter()
       for (const col in page.filter) {
         delete page.filter[col]
       }
@@ -306,7 +306,8 @@ export default defineComponent({
     }
 
     return {
-      refTable,
+      table,
+
       tableHeight,
       tableColumns,
       ...toRefs(page),

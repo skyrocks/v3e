@@ -32,6 +32,7 @@ import { ElScrollbar, ElDropdown, ElDropdownItem, ElDropdownMenu } from 'element
 import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import path from 'path'
+import { Tag } from '@/store/type'
 
 export default defineComponent({
   components: {
@@ -50,7 +51,7 @@ export default defineComponent({
 
     const tags = computed(() => store.getters['tag/visitedTags'])
 
-    let affixTags: any[] = []
+    let affixTags: Tag[] = []
     const initTags = () => {
       affixTags = filterAffixTags(router.getRoutes())
       for (const tag of affixTags) {
@@ -61,7 +62,7 @@ export default defineComponent({
     }
 
     const filterAffixTags = (routes: any[], basePath = '/') => {
-      let tags: any[] = []
+      let tags: Tag[] = []
       routes.forEach((route: any) => {
         if ((!route.children || route.children.length == 0) && route.meta && route.meta.affix) {
           const tagPath = path.resolve(basePath, route.path)
@@ -91,7 +92,6 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      console.log('tags onMounted')
       initTags()
       addTags()
     })
@@ -101,10 +101,10 @@ export default defineComponent({
       moveToCurrentTag()
     })
 
-    const isActive = (tag: any) => {
+    const isActive = (tag: Tag) => {
       return tag.path === currentRoute.path
     }
-    const toLastTag = (visitedTags: any, tag: any) => {
+    const toLastTag = (visitedTags: Tag[], tag: Tag) => {
       const latestTag = visitedTags.slice(-1)[0]
       if (latestTag) {
         router.push(latestTag.fullPath)
@@ -151,7 +151,7 @@ export default defineComponent({
       menu.visible = false
     }
 
-    const handleCloseTag = (tag: any) => {
+    const handleCloseTag = (tag: Tag) => {
       store.dispatch('tag/delTag', tag).then(({ visitedTags }) => {
         if (isActive(tag)) {
           // 如果是关闭当前的Tag,打开最后一个Tag
@@ -159,7 +159,7 @@ export default defineComponent({
         }
       })
     }
-    const handleRefreshTag = (tag: any) => {
+    const handleRefreshTag = (tag: Tag) => {
       store.dispatch('tag/delCachedTag', tag).then(() => {
         const { fullPath } = tag
         nextTick(() => {
@@ -169,13 +169,13 @@ export default defineComponent({
         })
       })
     }
-    const handleCloseOthersTags = (tag: any) => {
+    const handleCloseOthersTags = (tag: Tag) => {
       router.push(tag)
       store.dispatch('tag/delOthersTags', tag).then(() => {
         moveToCurrentTag()
       })
     }
-    const handleCloseAllTags = (tag: any) => {
+    const handleCloseAllTags = (tag: Tag) => {
       store.dispatch('tag/delAllTags').then(({ visitedTags }) => {
         if (affixTags.some(v => v.path === tag.path)) {
           return
@@ -185,7 +185,7 @@ export default defineComponent({
       })
     }
 
-    const openMenu = (tag: any, e: any) => {
+    const openMenu = (tag: Tag, e: any) => {
       // console.log(e)
       // const menuMinWidth = 105
       // const offsetLeft = refTag.value.$el.getBoundingClientRect().left // container margin left

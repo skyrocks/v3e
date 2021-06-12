@@ -111,8 +111,7 @@
 import { computed, defineComponent, onMounted, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElTooltip, ElImage } from 'element-plus'
-import { env, token } from '@/utils'
-import { v4 as uuidv4 } from 'uuid'
+import { env, token, util } from '@/utils'
 import { authApi } from '@/api/modules/auth'
 import { CustomResponse } from '@/api/types'
 
@@ -153,7 +152,7 @@ export default defineComponent({
     const route = useRoute()
 
     const handleRefreshCaptcha = () => {
-      state.form.captchaId = uuidv4()
+      state.form.captchaId = util.uuid()
       state.captchaUrl = `${env.API_BASE}/auth/captcha/${state.form.captchaId}`
     }
     const handlePwdLogin = () => {
@@ -178,7 +177,7 @@ export default defineComponent({
         if (state.sms.cellphone.length !== 11) {
           ElMessage.error('手机号码不合法')
         } else {
-          state.sms.id = uuidv4()
+          state.sms.id = util.uuid()
           authApi.sendSmsCode(state.sms).then(resp => {
             if (!resp.success) {
               ElMessage.error(resp.message)

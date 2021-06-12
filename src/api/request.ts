@@ -1,7 +1,7 @@
 import { ElMessage } from 'element-plus'
 import { env } from '@/utils'
 import { AxiosRequest, CustomResponse } from './types'
-import { localStore, _ } from '@/utils'
+import { token, header, _ } from '@/utils'
 import instance from './intercept'
 import store from '@/store'
 import { confirm } from '@/plugins'
@@ -12,18 +12,12 @@ const headersDefault: object = {
   ContentType: 'application/json;charset=UTF-8'
 }
 
-const getToken = () => {
-  return `Bearer ${localStore.get('token')}`
-}
-
 const request = (
   { baseURL = env.API_BASE, headers = headersDefault, method, url, data, params, responseType }: AxiosRequest,
   alterErr = true
 ): Promise<CustomResponse> => {
   return new Promise((resolve, reject) => {
-    Object.assign(headers, {
-      Authorization: getToken()
-    })
+    Object.assign(headers, header.getAuthorization())
     instance({ baseURL, headers, method, url, params, data, responseType })
       .then(async resp => {
         // status >= 200 && status < 300 满足这个条件都会进入then
@@ -97,7 +91,7 @@ const request = (
 }
 
 const tryRequest = async (err: any) => {
-  await store.dispatch('auth/refreshToken', getToken())
+  await store.dispatch('auth/refreshToken', token.getBearer())
   const resp = await request(err.config)
   return resp
 }

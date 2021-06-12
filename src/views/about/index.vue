@@ -16,12 +16,12 @@ export default defineComponent({
   setup() {
     const currentRoute = useRoute()
 
-    const clickHandler = () => {
+    const handleClick = () => {
       // console.log('about page')
     }
     return {
       currentRoute,
-      clickHandler
+      handleClick
     }
   }
 })

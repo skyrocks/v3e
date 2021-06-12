@@ -5,6 +5,10 @@ export const token = {
     return localStore.get('token')
   },
 
+  getBearer() {
+    return `Bearer ${localStore.get('token')}`
+  },
+
   set(token: string) {
     localStore.set('token', token)
   },

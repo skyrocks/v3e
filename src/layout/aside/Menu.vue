@@ -9,7 +9,7 @@
     :collapse-transition="false"
     mode="vertical"
     style="border: none"
-    @select="selectHandler"
+    @select="handleSelect"
   >
     <MenuItem v-for="menu in menus" :key="menu.menuId" :menu-info="menu" />
   </el-menu>
@@ -33,7 +33,7 @@ export default defineComponent({
     const activeMenu = computed(() => currentRoute.name)
 
     const router = useRouter()
-    const selectHandler = (index: string) => {
+    const handleSelect = (index: string) => {
       router.push({ name: index })
     }
 
@@ -43,7 +43,7 @@ export default defineComponent({
       activeMenu,
       menus,
 
-      selectHandler
+      handleSelect
     }
   }
 })

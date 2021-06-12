@@ -5,12 +5,12 @@
     <el-button type="primary" @click="testErrorAuthRequestHandle">测试认证错误的请求</el-button>
     <el-button type="primary" @click="testErrorInnerRequestHandle">测试内部错误的请求</el-button>
     <el-button v-permission="'add'" type="primary" @click="testSuccessRequestHandle">测试正确的请求</el-button>
-    <x-button type="success" log @click="testXButtonHandler">自定义组件</x-button>
+    <!-- <x-button type="success" log @click="testXButtonHandler">自定义组件</x-button> -->
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue'
+import { defineComponent } from 'vue'
 // import { defineComponent, getCurrentInstance, inject } from 'vue'
 // import { userApi } from '@/api/modules/user'
 // import { menuApi } from '@/api/modules/menu'
@@ -67,16 +67,16 @@ export default defineComponent({
       // })
     }
 
-    const testXButtonHandler = () => {
-      // console.log('testXButtonHandler')
-    }
+    // const testXButtonHandler = () => {
+    //   // console.log('testXButtonHandler')
+    // }
 
     return {
       testErrorPathRequestHandle,
       testErrorAuthRequestHandle,
       testErrorInnerRequestHandle,
-      testSuccessRequestHandle,
-      testXButtonHandler
+      testSuccessRequestHandle
+      // testXButtonHandler
     }
   }
 })

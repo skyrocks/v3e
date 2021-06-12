@@ -6,7 +6,10 @@ import { env } from './env'
 export { log } from './log'
 export { permission } from './permission'
 export { token } from './token'
+export { header } from './header'
 import { export2Excel } from './excel'
+import { v4 as uuidv4 } from 'uuid'
+export { validator } from './validator'
 
 export { default as _ } from 'lodash'
 export { env }
@@ -15,6 +18,15 @@ const customCache = new Set()
 
 export const util = {
   export2Excel: export2Excel,
+
+  /**
+   * 生成uuid
+   * @returns
+   */
+  uuid(): string {
+    return uuidv4()
+  },
+
   /**
    * 数字转换成英文字母
    * @param num
@@ -163,5 +175,18 @@ export const util = {
    */
   isEmptyObject(obj: any) {
     return JSON.stringify(obj) === '{}'
+  },
+
+  /**
+   * 对象数组合并去重
+   *
+   * @export
+   * @param {*} arr
+   * @returns
+   */
+  concatUnique(arr1: any[], arr2: any[], key: any) {
+    const arr = arr1.concat(arr2)
+    const res = new Map()
+    return arr.filter(item => !res.has(item[key]) && res.set(item[key], 1))
   }
 }

@@ -34,7 +34,7 @@ export default defineComponent({
     const btnType = computed(() => (props.xType === 'white' ? undefined : props.xType))
     const btnSize = computed(() => (props.xSize === 'large' ? undefined : props.xSize))
 
-    const clickHandler = () => {
+    const handleClick = () => {
       if (typeof props.log === 'string') {
         let text = btn.value.$el.innerText
         if (props.log !== '') {
@@ -47,12 +47,12 @@ export default defineComponent({
     onMounted(() => {
       if (typeof props.log === 'string') {
         $el = btn.value.$el
-        $el.addEventListener('click', clickHandler)
+        $el.addEventListener('click', handleClick)
       }
     })
     onUnmounted(() => {
       if (typeof props.log === 'string') {
-        $el.removeEventListener('click', clickHandler)
+        $el.removeEventListener('click', handleClick)
       }
     })
 

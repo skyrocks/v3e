@@ -23,3 +23,16 @@ export interface Menu {
   children: Menu[]
   affix: boolean
 }
+
+export interface RouteMeta {
+  title: string
+  affix: boolean
+  noCache: boolean
+}
+
+export interface Tag {
+  fullPath: string
+  path: string
+  name: string
+  meta: RouteMeta
+}
